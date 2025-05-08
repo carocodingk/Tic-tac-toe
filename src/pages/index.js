@@ -47,10 +47,10 @@ function TileLine({player, nextTurn, board, setBoard, setPlay}) {
   return(
     <div>
       {board.map((tile, row) => (
-        <div className="row">
+        <div key={row} className="row">
           {tile.map((s, col) => (
             /* Passes the row and col id of each tile */
-            <Tile player={player} nextTurn={nextTurn} board={board} setBoard={setBoard} row={row} col={col} setPlay={setPlay} />
+            <Tile key={col} player={player} nextTurn={nextTurn} board={board} setBoard={setBoard} row={row} col={col} setPlay={setPlay} />
           ))}
         </div>
       ))}
@@ -73,7 +73,6 @@ export default function Home() {
   }
 
   const checkWin = () => {
-    console.log(`board ${board}`)
     let result = 'lose'
 
     if ((board[0][0] === board[0][1] && board[0][1] === board[0][2]) ||
@@ -90,7 +89,6 @@ export default function Home() {
       result = 'tie'
     else
       result = 'lose'
-    console.log('play ', play)
     return result
   }
 
