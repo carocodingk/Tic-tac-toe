@@ -113,7 +113,7 @@ export default function Home() {
           </div>
           :
           <div>
-            <h1>Tie: No Winner</h1>
+            <h1 className="text">Tie: No Winner</h1>
           </div>
         
       }
