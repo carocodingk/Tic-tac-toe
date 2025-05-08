@@ -8,7 +8,7 @@ const initialBoard = [['  0 ', '  1 ', '  2 '],
                       ['  3 ', '  4 ', '  5 '],
                       ['  6 ', '  7 ', '  8 ']];
 
-function Tile({player, nextTurn, board, setBoard, row, col}) {
+function Tile({player, nextTurn, board, setBoard, row, col, setPlay}) {
   const [tileChosen, setTileChosen] = useState(false) /* Indicates if the tile has been chosen by a player already */
   const [tileOwner, setTileOwner] = useState("   ")
 
@@ -29,6 +29,7 @@ function Tile({player, nextTurn, board, setBoard, row, col}) {
       setBoard(updatedBoard)
       setTileOwner(player)
       setTileChosen(true)
+      setPlay(prevPlay => prevPlay + 1)
       nextTurn()
     }
   }
@@ -40,7 +41,7 @@ function Tile({player, nextTurn, board, setBoard, row, col}) {
   );
 }
 
-function TileLine({player, nextTurn, board, setBoard}) {
+function TileLine({player, nextTurn, board, setBoard, setPlay}) {
   let idx = 0
 
   return(
@@ -49,7 +50,7 @@ function TileLine({player, nextTurn, board, setBoard}) {
         <div className="row">
           {tile.map((s, col) => (
             /* Passes the row and col id of each tile */
-            <Tile player={player} nextTurn={nextTurn} board={board} setBoard={setBoard} row={row} col={col} />
+            <Tile player={player} nextTurn={nextTurn} board={board} setBoard={setBoard} row={row} col={col} setPlay={setPlay} />
           ))}
         </div>
       ))}
@@ -61,6 +62,7 @@ function TileLine({player, nextTurn, board, setBoard}) {
 export default function Home() {
   const [player, setPlayer] = useState('X');
   const [board, setBoard] = useState(initialBoard);
+  const [play, setPlay] = useState(0);
 
   // Who's playing next
   const nextTurn = () => { 
@@ -72,6 +74,8 @@ export default function Home() {
 
   const checkWin = () => {
     console.log(`board ${board}`)
+    let result = 'lose'
+
     if ((board[0][0] === board[0][1] && board[0][1] === board[0][2]) ||
         (board[1][0] === board[1][1] && board[1][1] === board[1][2]) ||
         (board[2][0] === board[2][1] && board[2][1] === board[2][2]) ||
@@ -80,28 +84,38 @@ export default function Home() {
         (board[0][2] === board[1][2] && board[1][2] === board[2][2]) ||
         (board[0][0] === board[1][1] && board[1][1] === board[2][2]) ||
         (board[0][2] === board[1][1] && board[1][1] === board[2][0])) {
-      return true
+      result = 'win'
     }
-    return false
+    else if (play === 9)
+      result = 'tie'
+    else
+      result = 'lose'
+    console.log('play ', play)
+    return result
   }
 
   return (
     <div id="game">
-      {!checkWin()?
-        <div>
-          <h1 className="text">NOW PLAYING:  {player}</h1>
-          <div>
-            <TileLine player={player} nextTurn={nextTurn} board={board} setBoard={setBoard} />
-          </div>
-        </div>
-        : (
+      {checkWin() === 'win'?
         <div>
           <h1 id="winner" className="text">WINNER: {player === 'O'? 
             'X'
             :
             'O'}</h1>
         </div>
-        )
+        :    
+        checkWin() === 'lose'?
+          <div>
+            <h1 className="text">NOW PLAYING:  {player}</h1>
+            <div>
+              <TileLine player={player} nextTurn={nextTurn} board={board} setBoard={setBoard} setPlay={setPlay} />
+            </div>
+          </div>
+          :
+          <div>
+            <h1>Tie: No Winner</h1>
+          </div>
+        
       }
     </div>
   );
